@@ -1,0 +1,111 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class HexCoord {
+#region Private Variables
+  
+  // Offset Coordinates
+  private int _i;
+  private int _j;
+
+  // Cube Coordinates
+  private int _x;
+  private int _y;
+  private int _z;
+
+  // Axial Coordinates
+  private int _q;
+  private int _r;
+
+#endregion
+#region Accessors
+
+  public int q {
+    set {
+      _q = value;
+      _x = q;
+      _y = -x - z;
+      _i = x + (z - (z&1)) / 2
+    }
+    get {
+      return _q;
+    }
+  }
+
+  public int r {
+    set {
+      _r = value;
+      _z = r;
+      _y = -x - z;
+      _i = x + (z - (z&1)) / 2
+      _j = z;
+    }
+    get {
+      return _r;
+    }
+  }
+
+  public int x {
+    set {
+      _x = value;
+      _q = x;
+      _y = -x - z;
+      _i = x + (z - (z&1)) / 2
+    }
+    get {
+      return _x;
+    }
+  }
+
+  public int y {
+    get {
+      return _y;
+    }
+  }
+
+  public int z {
+    set { 
+      _z = value;
+      _r = z;
+      _y = -x - z;
+      _i = x + (z - (z&1)) / 2;
+      _j = z;
+    }
+    get {
+      return _z;
+    }
+  }
+
+  public int i {
+    set {
+      _i = value;
+      _x = i - (j - (j&1)) / 2;
+      _y = -x - z;
+      _q = x;
+    }
+    get {
+      return _i;
+    }
+  }
+
+  public int j {
+    set {
+      _j = value;
+      _x = i - (j - (j&1)) / 2;
+      _z = j;
+      _y = -x - z;
+      _q = x;
+      _r = z;
+    }
+    get {
+      return _j;
+    }
+  }
+
+#endregion
+#region Constructors
+
+  HexCoord
+
+#endregion
+}
