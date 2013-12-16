@@ -20,6 +20,7 @@ public class MapDrawer: MonoBehaviour {
   }
 
 	void Start () {
+    this.gameObject.renderer.material = new Material(Shader.Find("Unlit/Transparent"));
 	}
 
 #endregion
@@ -38,8 +39,9 @@ public class MapDrawer: MonoBehaviour {
     int pixelHeight = (celSize - heightOffset) * (height - 1) + celSize;
 
     // Create texture
-    Texture2D tex = new Texture2D(pixelWidth, pixelHeight);
+    Texture2D tex = new Texture2D (pixelWidth, pixelHeight);
     tex.filterMode = FilterMode.Point;
+    
 
     // Scale plane to be pixel perfect
     this.gameObject.transform.localScale = 

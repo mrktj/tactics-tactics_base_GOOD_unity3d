@@ -47,6 +47,12 @@ public class HexGrid : ScriptableObject {
     grid[c.i + c.j * width] = val;
   }
 
+  public void ReSize(int i, int j) {
+    _width = i;
+    _height = j;
+    Array.Resize<int>(ref grid, i + j * _width);
+  }
+
 #endregion
 #region Private Methods
 

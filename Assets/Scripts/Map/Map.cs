@@ -9,7 +9,7 @@ public class Map : MonoBehaviour {
   public int width = 0;
   public int height = 0;
 
-  public int pixelHeightOffset = 11;
+  public int pixelHeightOffset = 16;
   public int celSize = 64;
   public Texture2D template;
   public GameObject plane;
@@ -36,10 +36,6 @@ public class Map : MonoBehaviour {
 #region Unity Methods
 
   public void OnEnable() {
-    Init();
-  }
-
-  public void Init() {
     _grid = ScriptableObject.CreateInstance<HexGrid> ();
     _grid.Init(width, height);
   }
@@ -48,7 +44,7 @@ public class Map : MonoBehaviour {
 #region Public Methods
 
   public void ResizeMap() {
-    Init();
+    _grid.ReSize(width, height);
     OnMapUpdate();
   }
 

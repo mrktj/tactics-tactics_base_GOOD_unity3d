@@ -16,6 +16,12 @@ public class MapDrawerEditor : Editor {
     DrawDefaultInspector();
     if (GUI.changed) { 
       m.plane = d.gameObject;
+      m.OnMapUpdate -= () => d.GenerateTexture();
+      m.OnMapUpdate += () => d.GenerateTexture();
+    }
+    if (GUILayout.Button("ReSync")) {
+      m.OnMapUpdate -= () => d.GenerateTexture();
+      m.OnMapUpdate += () => d.GenerateTexture();
     }
   }
 }
