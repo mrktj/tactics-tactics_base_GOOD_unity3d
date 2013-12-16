@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
-public class HexGrid {
+[Serializable]
+public class HexGrid : ScriptableObject {
 #region Public Variables
   
 #endregion
@@ -18,22 +20,20 @@ public class HexGrid {
   public int height {get {return _height;}}
 
 #endregion
-#region Constructors
+#region UnityFunctions
 
-  public HexGrid() {
-    _width = 0;
-    _height = 0;
-    grid = new int[width * height];
-  }
-
-  public HexGrid(int i, int j) {
-    _width = i;
-    _height = j;
-    grid = new int[width * height];
+  public void OnEnable() { 
+    hideFlags = HideFlags.HideAndDontSave;
   }
 
 #endregion
 #region Public Methods
+
+  public void Init(int i, int j) {
+    _width = i;
+    _height = j;
+    grid = new int[width * height];
+  }
 
   public int Cel(int i, int j) {
     return grid[i + j * width];
@@ -41,7 +41,10 @@ public class HexGrid {
 
   public void SetCel(int i, int j, int val) {
     grid[i + j * width] = val;
-    Debug.Log(grid[i + j * width]);
+  }
+
+  public void SetCel(HexCoord c, int val) {
+    grid[c.i + c.j * width] = val;
   }
 
 #endregion
