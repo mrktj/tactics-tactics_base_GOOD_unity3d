@@ -9,8 +9,11 @@ public class HexGrid : ScriptableObject {
 #endregion
 #region Private Variables
 
+  [SerializeField]
   private int _width;
+  [SerializeField]
   private int _height;
+  [SerializeField]
   private int[] grid;
 
 #endregion
@@ -20,31 +23,37 @@ public class HexGrid : ScriptableObject {
   public int height {get {return _height;}}
 
 #endregion
-#region UnityFunctions
+#region Constructors
+  public HexGrid() {
+    _width = 0;
+    _height = 0;
+    grid = new int[width * height];
+  }
 
   public void OnEnable() { 
     hideFlags = HideFlags.HideAndDontSave;
+    _width = 0;
+    _height = 0;
+    grid = new int[width * height];
   }
 
 #endregion
 #region Public Methods
 
-  public void Init(int i, int j) {
-    _width = i;
-    _height = j;
-    grid = new int[width * height];
-  }
-
   public int Cel(int i, int j) {
     return grid[i + j * width];
   }
 
-  public void SetCel(int i, int j, int val) {
-    grid[i + j * width] = val;
+  public bool SetCel(int i, int j, int val) {
+    if (i >= 0 && i < width && j >=0 && j < height) {
+      grid[i + j * width] = val;
+      return true;
+    }
+    return false;
   }
 
-  public void SetCel(HexCoord c, int val) {
-    grid[c.i + c.j * width] = val;
+  public bool SetCel(HexCoord c, int val) {
+    return SetCel(c.i, c.j, val);
   }
 
   public void ReSize(int i, int j) {
