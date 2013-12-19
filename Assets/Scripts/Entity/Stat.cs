@@ -23,18 +23,26 @@ public class StatType {
     _max = maxVal;
   }
 
-  public static StatType Vit {get {return new StatType(1, 9999);}}
-  public static StatType Focus    {get {return new StatType(1, 9999);}}
-  public static StatType Soul     {get {return new StatType(1, 9999);}}
-  public static StatType Strength {get {return new StatType(1, 999);}}
-  public static StatType Int      {get {return new StatType(1, 999);}}
-  public static StatType Drive    {get {return new StatType(1, 999);}}
+  public static StatType Vit  = new StatType(1, 9999);
+  public static StatType Int  = new StatType(1, 9999);
+  public static StatType Soul = new StatType(1, 9999);
+
+  public static StatType Health = new StatType(1, 999);
+  public static StatType Focus  = new StatType(1, 999);
+  public static StatType Spirit = new StatType(1, 999);
 
   public static List<StatType> Defaults {
     get {
       return new List<StatType> {
-        Vit, Focus, Soul,
-        Strength, Int, Drive
+        Vit, Int, Soul
+      };
+    }
+  }
+
+  public static List<StatType> MapDefaults {
+    get {
+      return new List<StatType> {
+        Health, Focus, Spirit
       };
     }
   }
@@ -178,7 +186,9 @@ public class Stat {
   }
 
   public override int GetHashCode() {
-    return val;
+    int hash = 17;
+    hash = hash * 23 + val.GetHashCode();
+    return hash;
   }
 
 #endregion

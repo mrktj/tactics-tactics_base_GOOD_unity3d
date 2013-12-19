@@ -147,4 +147,35 @@ public class HexCoord {
   }
 
 #endregion
+#region Operator Overloads
+
+  public static HexCoord operator +(HexCoord a, HexCoord b) {
+    return new HexCoord(a.i + b.i, a.j + b.j);
+  }
+
+  public static HexCoord operator -(HexCoord a, HexCoord b) {
+    return new HexCoord(a.i - b.i, a.j - b.j);
+  }
+
+  public static bool operator ==(HexCoord a, HexCoord b) {
+    return (a.i == b.i) && (a.j == b.j);
+  }
+
+  public static bool operator !=(HexCoord a, HexCoord b) {
+    return !(a == b);
+  }
+
+  public override bool Equals(System.Object obj) {
+    if (obj == null || ! (obj is HexCoord)) return false;
+    else return this == (HexCoord) obj;
+  }
+
+  public override int GetHashCode() {
+    int hash = 17;
+    hash = hash * 23 + i.GetHashCode();
+    hash = hash * 23 + j.GetHashCode();
+    return hash;
+  }
+
+#endregion
 }
