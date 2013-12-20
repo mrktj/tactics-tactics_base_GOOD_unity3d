@@ -5,19 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using ST = StatType;
 
-[Serializable]
-public class MapEntity : ScriptableObject{
+public class MapEntity {
 #region Public Variables
+
+  [SerializeField]
+  public GameObject gameObject;
 
 #endregion
 #region Private Variables
 
-  [SerializeField]
   private Dictionary<ST, Stat> _mapStats;
-  [SerializeField]
   private HexCoord _pos;
-  [SerializeField]
   private string _name;
+  private Map map;
 
 #endregion
 #region Accessors
@@ -35,26 +35,28 @@ public class MapEntity : ScriptableObject{
 #endregion
 #region
 
-  void OnEnable() {
-    _name = "";
-    _pos = new HexCoord(0, 0);
+  public MapEntity(String newName, HexCoord newPos, Dictionary<ST, Stat> entityStats, Map m) {
     _mapStats = new Dictionary<ST, Stat>();
     foreach (ST st in ST.MapDefaults) {
       _mapStats.Add(st, new Stat(st));
     }
-  }
-
-  public void Init(String newName, HexCoord newPos) {
     _name = newName;
+    map = m;
+    SetMapStat(ST.Health, entityStats[ST.Vit].val);
+    SetMapStat(ST.Focus,  entityStats[ST.Int].val);
+    SetMapStat(ST.Spirit, entityStats[ST.Soul].val);
+    gameObject = (GameObject) UnityEngine.Object.Instantiate(Resources.Load("Sprites/MapEntities/" + mapEntityName));
+    gameObject.transform.parent = map.transform;
     MoveTo(newPos);
   }
 
   public void MoveTo(HexCoord h) {
     _pos = h;
+    gameObject.transform.localPosition = map.gridDrawer.HexToPixel(_pos);
   }
 
   public void MoveBy(HexCoord h) {
-    _pos += h;
+    MoveTo(_pos + h);
   }
 
 #endregion

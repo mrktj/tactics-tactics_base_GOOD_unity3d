@@ -3,33 +3,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-[Serializable]
-public class Map : ScriptableObject {
+public class Map : MonoBehaviour {
 #region Public Variables
   
-
 #endregion 
 #region PrivateVariables
 
   [SerializeField]
   private HexGrid _grid;
   [SerializeField]
-  private int _width;
-  [SerializeField]
-  private int _height;
-  [SerializeField]
   private List<MapEntity> _mapEntities;
   [SerializeField]
-  private GridDrawer _drawer;
+  private GridDrawer _gridDrawer;
 
 #endregion
 #region Accessors
 
+  public GridDrawer gridDrawer {get {return _gridDrawer;}}
   public HexGrid grid { get {return _grid;}}
-  public int width {get {return _width;}}
-  public int height {get {return _height;}}
   public List<MapEntity> mapEntities {get {return _mapEntities;}}
-  public GridDrawer drawer {get {return _drawer;}}
+  public int width {get {return grid.width;}}
+  public int height {get {return grid.width;}}
 
 #endregion
 #region Delegates
@@ -37,47 +31,65 @@ public class Map : ScriptableObject {
 #region Unity Methods
 
   public void OnEnable() {
-    if (_grid == null) {
-      _grid = ScriptableObject.CreateInstance<HexGrid> ();
-      _grid.ReSize(width, height);
-      _mapEntities = new List<MapEntity>();
-    }
-  }
-
-  public void Init(int w, int h, GridDrawer d) {
-    _width = w;
-    _height = h;
-    _drawer = d;
+    _mapEntities = new List<MapEntity>();
   }
 
 #endregion
 #region Public Methods
 
-  public void ResizeMap(int w, int h) {
-    _width = w;
-    _height = h;
-    _grid.ReSize(width, height);
+  public void DrawMap() {
+    DrawGrid();
   }
 
-  public void SpawnMapEntity(MapEntity me) {
+  public void DrawGrid() {
+    gridDrawer.DrawGrid();
+  }
+
+  public MapEntity EntityAt(HexCoord h) {
+    foreach (MapEntity me in _mapEntities) {
+      if (me.pos == h) {
+        return me;
+      }
+    }
+    return null;
+  }
+
+  public MapEntity EntityAt(Vector3 v) {
+    HexCoord h = gridDrawer.PixelToHex(v);
+    return EntityAt(h);
+  }
+
+  public bool RemoveEntity(MapEntity m0) {
+    foreach (MapEntity m1 in _mapEntities) {
+      if (m1 == m0) {
+        DestroyImmediate(m1.gameObject);
+        _mapEntities.Remove(m1);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public bool RemoveEntityAt(HexCoord h) {
+    foreach (MapEntity me in _mapEntities) {
+      if (me.pos == h) {
+        DestroyImmediate(me.gameObject);
+        _mapEntities.Remove(me);
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+  public void SpawnMapEntity(HexCoord h, Entity e) {
+    MapEntity me = e.CreateMapEntity(h, this);
     _mapEntities.Add(me);
-    GameObject go = (GameObject) Instantiate(Resources.Load("MapEntities/" + me.mapEntityName));
-    Debug.Log(drawer);
-    go.transform.parent = drawer.gameObject.transform;
-    Debug.Log(drawer.HexToPixel(me.pos));
-    go.transform.localPosition = drawer.HexToPixel(me.pos);
   }
 
-  public bool SetCel(HexCoord h, int val) {
-    return _grid.SetCel(h, val);
-  }
-
-  public int Cel(HexCoord h) {
-    return _grid.Cel(h.i, h.j);
-  }
-
-  public int Cel(int i, int j) {
-    return _grid.Cel(i, j);
+  public void Load(HexGrid g, Texture2D template) {
+    _grid = g;
+    _gridDrawer = new GridDrawer(template, g, this.gameObject);
   }
 
 #endregion

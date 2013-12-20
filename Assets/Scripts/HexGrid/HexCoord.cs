@@ -158,7 +158,10 @@ public class HexCoord {
   }
 
   public static bool operator ==(HexCoord a, HexCoord b) {
-    return (a.i == b.i) && (a.j == b.j);
+    if ((System.Object) a != null && (System.Object) b != null) {
+      return (a.i == b.i) && (a.j == b.j);
+    }
+    else return ((System.Object) a == null && (System.Object) b == null);
   }
 
   public static bool operator !=(HexCoord a, HexCoord b) {
@@ -175,6 +178,10 @@ public class HexCoord {
     hash = hash * 23 + i.GetHashCode();
     hash = hash * 23 + j.GetHashCode();
     return hash;
+  }
+
+  public override string ToString() {
+    return "HexCoord: " + i + " "+ j;
   }
 
 #endregion

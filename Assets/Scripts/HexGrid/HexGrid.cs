@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 
 [Serializable]
-public class HexGrid : ScriptableObject {
+public class HexGrid {
 #region Public Variables
   
 #endregion
@@ -24,17 +24,11 @@ public class HexGrid : ScriptableObject {
 
 #endregion
 #region Constructors
-  public HexGrid() {
-    _width = 0;
-    _height = 0;
-    grid = new int[width * height];
-  }
 
-  public void OnEnable() { 
-    hideFlags = HideFlags.HideAndDontSave;
-    _width = 0;
-    _height = 0;
-    grid = new int[width * height];
+  public HexGrid(int i, int j) { 
+    _width = i;
+    _height = j;
+      grid = new int[width * height];
   }
 
 #endregion
@@ -46,7 +40,15 @@ public class HexGrid : ScriptableObject {
 
   public bool SetCel(int i, int j, int val) {
     if (i >= 0 && i < width && j >=0 && j < height) {
-      grid[i + j * width] = val;
+      SetCel(i + j * width, val);
+      return true;
+    }
+    return false;
+  }
+
+  public bool SetCel(int i, int val) {
+    if (i >= 0 && i < width * height ) {
+      grid[i] = val;
       return true;
     }
     return false;
@@ -54,12 +56,6 @@ public class HexGrid : ScriptableObject {
 
   public bool SetCel(HexCoord c, int val) {
     return SetCel(c.i, c.j, val);
-  }
-
-  public void ReSize(int i, int j) {
-    _width = i;
-    _height = j;
-    Array.Resize<int>(ref grid, i + j * _width);
   }
 
 #endregion

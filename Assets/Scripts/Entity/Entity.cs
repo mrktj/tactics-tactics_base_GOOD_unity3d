@@ -5,15 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using ST = StatType;
 
-[Serializable]
 public abstract class Entity : ScriptableObject{
 #region Public Variables
 #endregion
 #region Private Variables
 
-  [SerializeField]
   private Dictionary<ST, Stat> _stats;
-  [SerializeField]
   private String _name;
 
 #endregion 
@@ -43,14 +40,12 @@ public abstract class Entity : ScriptableObject{
     _name = s;
   }
 
-  public MapEntity CreateMapEntity(HexCoord initPos) {
-    MapEntity me = ScriptableObject.CreateInstance<MapEntity>();
-    me.Init(entityName, initPos);
-    me.SetMapStat(ST.Health,    GetStat(ST.Vit));
-    me.SetMapStat(ST.Focus,     GetStat(ST.Int));
-    me.SetMapStat(ST.Spirit,    GetStat(ST.Soul));
+  public string GetMapEntityName() { 
+    return entityName;
+  }
 
-    return me;
+  public MapEntity CreateMapEntity(HexCoord initPos, Map m) {
+    return new MapEntity(GetMapEntityName(), initPos, _stats, m);
   }
 
 #endregion 
