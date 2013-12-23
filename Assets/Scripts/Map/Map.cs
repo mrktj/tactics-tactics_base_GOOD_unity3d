@@ -81,7 +81,6 @@ public class Map : MonoBehaviour {
     return false;
   }
 
-
   public void SpawnMapEntity(HexCoord h, Entity e) {
     MapEntity me = e.CreateMapEntity(h, this);
     _mapEntities.Add(me);

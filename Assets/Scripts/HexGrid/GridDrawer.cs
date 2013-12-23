@@ -29,6 +29,10 @@ public class GridDrawer {
   public int pixelWidth     {get {return celSize * width + celSize / 2;}}
   public int pixelHeight    {get {return (celSize - heightOffset) * (height - 1) + celSize;}}
   public int numCelTypes    {get {return template.width / celSize;}}
+  public Vector2 origin     {get {Vector2 o= (Vector2) quad.transform.localPosition;
+                                  o -= new Vector2(pixelWidth/2 * 0.01f, -pixelHeight/2 * 0.01f);
+                                  o += new Vector2(celSize/2 * 0.01f, -celSize/2 * 0.01f);
+                                  return o;}}
 
 #endregion
 #region Unity Methods
@@ -40,6 +44,9 @@ public class GridDrawer {
     go.renderer.sharedMaterial = new Material(Shader.Find("Unlit/Transparent"));
     go.renderer.sharedMaterial.mainTexture = new Texture2D(pixelWidth, pixelHeight);
     go.renderer.sharedMaterial.SetTextureScale("_MainTex", new Vector2(1, 1));
+    // Scale Quad to be pixel perfect
+    quad.transform.localScale = 
+      new Vector3(pixelWidth * .01f, pixelHeight * .01f, 1);
   }
 
 #endregion
@@ -55,9 +62,6 @@ public class GridDrawer {
     tex.Resize(pixelWidth, pixelHeight);
     tex.filterMode = FilterMode.Point;
 
-    // Scale Quad to be pixel perfect
-    quad.transform.localScale = 
-      new Vector3(pixelWidth * .01f, pixelHeight * .01f, 1);
     
     // Color texture properly
     Color[] cols = new Color[pixelWidth * pixelHeight];
@@ -82,7 +86,6 @@ public class GridDrawer {
   }
 
   public void ColorCel(HexCoord idx, int val) {
-    Debug.Log("Coloring " + idx);
     Texture2D tex = (Texture2D) quad.renderer.sharedMaterial.mainTexture;
     Color[] cels;
     if (val == numCelTypes - 1) {
@@ -108,21 +111,19 @@ public class GridDrawer {
     tex.Apply();
   }
 
-
   public Vector2 HexToPixel(HexCoord h) { 
-    Vector2 scale = quad.transform.localScale ;
-    Vector2 origin = new Vector2(- 0.5f + celSize/200.0f/scale.x, 0.5f - celSize/200.0f/scale.y);
     Vector2 offset = new Vector2((celSize * h.i + celSize / 2 * (h.j & 1)), 
                        - (celSize / 2) * 3.0f / 2 * h.j);
-    offset.x /= scale.x * 100.0f;
-    offset.y /= scale.y * 100.0f;
+    offset.x *= 0.01f;
+    offset.y *= 0.01f;
     return offset + origin;
   }
 
   public HexCoord PixelToHex(Vector2 pos) {
-    Vector2 scale = quad.transform.localScale ;
-    float x = (pos.x * 100.0f * scale.x);
-    float y = (pixelHeight - pos.y * 100.0f * scale.y);
+    Vector2 scale = quad.transform.localScale;
+    float x = (pos.x - origin.x) * 100.0f + celSize/2;
+    float y = pixelHeight - (pos.y + origin.y) * 100.0f - celSize/2;
+    
     x = (x - celSize / 2) / celSize;
     float t1 = y / (celSize / 2);
     float t2 = Mathf.Floor(x + t1);
@@ -130,6 +131,9 @@ public class GridDrawer {
     float q = Mathf.Floor((Mathf.Floor(2 * x + 1) + t2) / 3) - r;
     
     HexCoord h = new HexCoord((int) q, (int) r, true);
+    if (h.i < 0 || h.i >= grid.width || h.j < 0 || h.j >= grid.height) {
+      return null;
+    }
     return h;
   }
 
@@ -144,10 +148,13 @@ public class GridDrawer {
     x = (x - celSize / 2) / celSize;
     float t1 = y / (celSize / 2);
     float t2 = Mathf.Floor(x + t1);
-    float r = Mathf.Floor((Mathf.Floor(t1 - x) + t2) / 3);
-    float q = Mathf.Floor((Mathf.Floor(2 * x + 1) + t2) / 3) - r;
+    int r = (int) Mathf.Floor((Mathf.Floor(t1 - x) + t2) / 3);
+    int q = (int) Mathf.Floor((Mathf.Floor(2 * x + 1) + t2) / 3) - r;
     
     HexCoord h = new HexCoord((int) q, (int) r, true);
+    if (h.i < 0 || h.i >= grid.width || h.j < 0 || h.j >= grid.height) {
+      return null;
+    }
     return h;
   }
 

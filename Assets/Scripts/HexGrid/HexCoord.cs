@@ -113,6 +113,10 @@ public class HexCoord {
     }
   }
 
+  public HexCoord(string[] s, bool axial = false) :
+    this(Convert.ToInt32(s[0]), Convert.ToInt32(s[1]), axial) {
+  }
+
 #endregion
 #region Public Methods
 

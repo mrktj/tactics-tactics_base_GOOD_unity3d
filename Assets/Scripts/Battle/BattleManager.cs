@@ -16,12 +16,18 @@ public class BattleManager : MonoBehaviour {
 
 	void Start () {
     selection = new HexCoord(-1, -1);
-    MapLoader.LoadFromFile(map, "TestMap");
+    //MapLoader.LoadFromFile(map, "TestMap");
+    MapLoader.LoadFromXML(map, "xmlTest");
     map.DrawMap();
 	}
 	
 	// Update is called once per frame
 	void Update () {
+    CursorHandler();
+    CheckForSwap();
+  }
+
+  public void CheckForSwap() {
     bool active1 = selection1.gameObject.activeSelf;
     bool active2 = selection2.gameObject.activeSelf;
     if (active1 && active2) {
@@ -29,45 +35,51 @@ public class BattleManager : MonoBehaviour {
       MapEntity m2 = map.EntityAt(selection2.gameObject.transform.position);
 
       if (m1 != null && m2 == null) {
-        m1.MoveTo(map.gridDrawer.PixelToHex(selection2.gameObject.transform.position));
+        m1.MoveTo(map.gridDrawer.PixelToHex(selection2.localPosition));
+        selection1.localPosition = selection2.localPosition;
+        selection2.gameObject.SetActive(false);
       }
     }
-    
-    CursorHandler();
-	}
+  }
 
   public void CursorHandler() {
     Ray ray = cam.ScreenPointToRay(Input.mousePosition);
     RaycastHit hit = new RaycastHit();
     if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << 8)) {
       HexCoord newSelection = map.gridDrawer.TexToHex(hit.textureCoord);
-      Debug.Log(newSelection);
-      Vector2 newPos = map.gridDrawer.HexToPixel(newSelection);
-      if (newSelection != selection) {
-        cursor.SetActive(true);
-        selection = newSelection;
-        cursor.transform.localPosition = newPos;
+      if (newSelection != null) {
+        Vector2 newPos = map.gridDrawer.HexToPixel(newSelection);
+        if (newSelection != selection) {
+          cursor.SetActive(true);
+          selection = newSelection;
+          cursor.transform.localPosition = newPos;
+        }
+        if (Input.GetMouseButtonUp(0)) {
+          bool active = selection1.gameObject.activeSelf;
+          if (active && newPos == (Vector2) selection1.localPosition) {
+            selection1.gameObject.SetActive(false);
+          }
+          else { 
+            selection1.gameObject.SetActive(true);
+            selection1.localPosition = map.gridDrawer.HexToPixel(selection);
+          }
+        }
+        if (Input.GetMouseButtonUp(1) && selection1.gameObject.activeSelf) {
+          bool active = selection2.gameObject.activeSelf;
+          Vector2 newpos = map.gridDrawer.HexToPixel(selection);
+          if ((active && newPos == (Vector2) selection2.localPosition) ||
+              (newpos == (Vector2) selection1.localPosition)) {
+            selection2.gameObject.SetActive(false);
+          }
+          else {
+            selection2.gameObject.SetActive(true);
+            selection2.localPosition = newpos;
+          }
+        }
       }
-      if (Input.GetMouseButtonUp(0)) {
-        bool active = selection1.gameObject.activeSelf;
-        if (active && newPos == (Vector2) selection1.localPosition) {
-          selection1.gameObject.SetActive(false);
-        }
-        else { 
-          selection1.gameObject.SetActive(true);
-          selection1.localPosition = map.gridDrawer.HexToPixel(selection);
-        }
-      }
-      if (Input.GetMouseButtonUp(1)) {
-        bool active = selection2.gameObject.activeSelf;
-        if (active && newPos == (Vector2) selection2.localPosition) {
-          selection2.gameObject.SetActive(false);
-        }
-        else {
-          selection2.gameObject.SetActive(true);
-          selection2.localPosition = map.gridDrawer.HexToPixel(selection);
-        }
-      }
+    }
+    else {
+      cursor.SetActive(false);
     }
   }
 }

@@ -1,30 +1,44 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 public static class MapLoader {
 
-  private static string delimiters = 
-    @"TemplatePath:\r+\n+" + @"|Grid:\r+\n+" + 
-    @"|MapEntities:\r+\n+";
-  private static string subdelimiters = @" |\r+\n+";
+  private static string subdelimiters = @",* +|\r+\n+";
+  private static string baseDirectory = "Sprites/Map/";
 
-  public static void LoadFromFile(Map m, string filename) {
+  public static void LoadFromXML(Map m, string filename) {
     TextAsset mapfile = (TextAsset) Resources.Load("MapFiles/" + filename, typeof(TextAsset));
-    string[] sections = Regex.Split(mapfile.text, delimiters);
-
-    string[] templatePath = Regex.Split(sections[1],subdelimiters);
-    Texture2D template = Resources.Load<Texture2D>("Sprites/Hexagons/" + templatePath[0]);
-
-    string[] grid = Regex.Split(sections[2],subdelimiters);
-    foreach (string s in grid) Debug.Log(s);
-    HexGrid g = new HexGrid(Convert.ToInt32(grid[0]), Convert.ToInt32(grid[1]));
-    for (int i = 0; i < g.width * g.height; i++) {
-      g.SetCel(i, Convert.ToInt32(grid[i + 2]));
+    XmlDocument xmlDoc = new XmlDocument();
+    xmlDoc.LoadXml(mapfile.text);
+    string templatePath = xmlDoc.SelectSingleNode("map/template").InnerText;
+    Texture2D template = Resources.Load<Texture2D>(baseDirectory + templatePath);
+  
+    XmlNodeList rows = xmlDoc.SelectNodes("map/grid/row");
+    HexGrid g = new HexGrid(0, 0);
+    int i = 0;
+    foreach (XmlNode row in rows) {
+      string[] rowText = Regex.Split(row.InnerText, subdelimiters);
+      if (i == 0) {
+        g = new HexGrid(rowText.Length, rows.Count);
+      }
+      foreach (string cel in rowText) {
+        g.SetCel(i, Convert.ToInt32(cel));
+        i += 1;
+      }
     }
-
+     
     m.Load(g, template); 
-  }
 
+    XmlNodeList xmlentities = xmlDoc.SelectNodes("map/entities/entity");
+    foreach (XmlNode e in xmlentities) {
+      string[] pos = Regex.Split(e.SelectSingleNode("position").InnerText, subdelimiters);
+      string[] stats = Regex.Split(e.SelectSingleNode("stats").InnerText, subdelimiters);
+      string unitpath = e.SelectSingleNode("sprite").InnerText;
+      m.SpawnMapEntity(new HexCoord(pos), new Unit(unitpath, new Stats(stats)));
+    }
+  }
 }

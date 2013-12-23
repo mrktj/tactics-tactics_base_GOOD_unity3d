@@ -3,49 +3,51 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ST = StatType;
 
-public abstract class Entity : ScriptableObject{
+public abstract class Entity {
 #region Public Variables
 #endregion
 #region Private Variables
 
-  private Dictionary<ST, Stat> _stats;
-  private String _name;
+  private Stats _stats;
+  private String _path;
 
 #endregion 
 #region Accessors
 
-  public List<Stat> stats {get {return _stats.Values.ToList();}}
-  public int GetStat(ST type) {return _stats[type].val;}
-  public String entityName {get {return _name;}}
-
-#endregion
-#region Mutators
-
-  public void SetStat(ST type, int newVal) {_stats[type].val = newVal;}
+  public Stats stats {get {return _stats;}}
+  public String path {get {return _path;}}
+  public String mapPath {get {return _path;}}
 
 #endregion
 #region Constructors
 
-  public virtual void OnEnable() {
-    _name = "";
-    _stats = new Dictionary<ST, Stat>();
-    foreach (ST st in ST.Defaults) {
-      _stats.Add(st, new Stat(st));
-    }
+
+  public Entity() {
+    _path = "";
+    _stats = new Stats();
   }
 
-  public virtual void Init(string s) {
-    _name = s;
+  public Entity(string s) {
+    _path = s;
+    _stats = new Stats();
   }
 
-  public string GetMapEntityName() { 
-    return entityName;
+  public Entity(Stats s) {
+    _path = "";
+    _stats = s;
   }
+
+  public Entity(string p, Stats s) {
+    _path = p;
+    _stats = s;
+  }
+
+#endregion
+#region Public Methods
 
   public MapEntity CreateMapEntity(HexCoord initPos, Map m) {
-    return new MapEntity(GetMapEntityName(), initPos, _stats, m);
+    return new MapEntity(mapPath, initPos, stats, m);
   }
 
 #endregion 
