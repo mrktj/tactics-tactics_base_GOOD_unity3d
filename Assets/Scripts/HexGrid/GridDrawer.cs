@@ -22,6 +22,7 @@ public class GridDrawer {
  
   private int _heightOffset = 16;
   private int _celSize = 64;
+  
   public int width          {get {return grid.width;}}
   public int height         {get {return grid.height;}}
   public int celSize        {get {return _celSize;}}
@@ -120,7 +121,6 @@ public class GridDrawer {
   }
 
   public HexCoord PixelToHex(Vector2 pos) {
-    Vector2 scale = quad.transform.localScale;
     float x = (pos.x - origin.x) * 100.0f + celSize/2;
     float y = pixelHeight - (pos.y + origin.y) * 100.0f - celSize/2;
     

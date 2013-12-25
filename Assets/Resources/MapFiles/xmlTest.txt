@@ -4,18 +4,21 @@
   <grid>
     <row>0 1 2 3</row>
     <row>3 2 1 0</row>
-    <row>0 4 4 4</row>
+    <row>0 4 2 3</row>
     <row>1 1 2 1</row>
+    <row>0 0 2 1</row>
   </grid>
   <entities>
     <entity>
       <sprite>Sword</sprite>
+      <friendly>true</friendly>
       <position>2 3</position>
       <stats>4 3 2 1 0 0 0 0 0 0 0 0</stats>
     </entity>
     <entity>
       <sprite>Sword</sprite>
-      <position>1 2</position>
+      <friendly>false</friendly>
+      <position>0 2</position>
       <stats>4 3 2 1 0 0 0 0 0 0 0 0</stats>
     </entity>
   </entities>

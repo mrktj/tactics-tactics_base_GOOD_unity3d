@@ -46,8 +46,8 @@ public abstract class Entity {
 #endregion
 #region Public Methods
 
-  public MapEntity CreateMapEntity(HexCoord initPos, Map m) {
-    return new MapEntity(mapPath, initPos, stats, m);
+  public MapEntity CreateMapEntity(HexCoord initPos, Map m, bool friendly) {
+    return new MapEntity(mapPath, initPos, stats, m, friendly);
   }
 
 #endregion 

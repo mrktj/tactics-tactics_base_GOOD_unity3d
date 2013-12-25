@@ -7,79 +7,83 @@ public class BattleManager : MonoBehaviour {
 
   public Map map;
   public Camera cam;
-  public GameObject cursor;
+  public Transform cursor;
   public Transform selection1;
   public Transform selection2;
-
   private HexCoord selection = null;
 	// Use this for initialization
-
-	void Start () {
-    selection = new HexCoord(-1, -1);
-    //MapLoader.LoadFromFile(map, "TestMap");
-    MapLoader.LoadFromXML(map, "xmlTest");
-    map.DrawMap();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-    CursorHandler();
-    CheckForSwap();
+  
+  void Start() {
+  }
+  
+  void Update() {
+    if (Network.isClient) {
+      return;
+    }
+    DoMove(CursorHandler(Input.mousePosition, Input.GetMouseButtonUp(0), Input.GetMouseButtonUp(1)));
   }
 
-  public void CheckForSwap() {
-    bool active1 = selection1.gameObject.activeSelf;
-    bool active2 = selection2.gameObject.activeSelf;
-    if (active1 && active2) {
-      MapEntity m1 = map.EntityAt(selection1.gameObject.transform.position);
-      MapEntity m2 = map.EntityAt(selection2.gameObject.transform.position);
-
-      if (m1 != null && m2 == null) {
-        m1.MoveTo(map.gridDrawer.PixelToHex(selection2.localPosition));
-        selection1.localPosition = selection2.localPosition;
-        selection2.gameObject.SetActive(false);
-      }
+  public void LoadBattle() {
+    MapLoader.LoadFromXML(map, "xmlTest");
+    map.DrawMap();
+  }
+	
+  public void MoveCursor(Vector3 pos) {
+    bool active = selection1.gameObject.activeSelf;
+    if (active && pos == selection1.localPosition) {
+      selection1.gameObject.SetActive(false);
+    }
+    else {
+      selection1.gameObject.SetActive(true);
+      selection1.localPosition = pos;
     }
   }
 
-  public void CursorHandler() {
-    Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+  public void DoMove(int[] data) {
+    if (data != null) {
+      map.MoveEntity(data[0], new HexCoord(data[1], data[2]));
+    }
+  }
+
+  public int[] CursorHandler(Vector3 mousePos, bool left, bool right) {
+    Vector3 newMouse = mousePos;
+    newMouse.x = mousePos.x/Screen.width;
+    newMouse.y = mousePos.y/Screen.height;
+    Ray ray = cam.ViewportPointToRay(newMouse);
     RaycastHit hit = new RaycastHit();
     if (Physics.Raycast(ray, out hit, Mathf.Infinity, 1 << 8)) {
       HexCoord newSelection = map.gridDrawer.TexToHex(hit.textureCoord);
       if (newSelection != null) {
         Vector2 newPos = map.gridDrawer.HexToPixel(newSelection);
         if (newSelection != selection) {
-          cursor.SetActive(true);
           selection = newSelection;
-          cursor.transform.localPosition = newPos;
+          cursor.gameObject.SetActive(true);
+          cursor.localPosition = newPos;
         }
-        if (Input.GetMouseButtonUp(0)) {
-          bool active = selection1.gameObject.activeSelf;
-          if (active && newPos == (Vector2) selection1.localPosition) {
-            selection1.gameObject.SetActive(false);
-          }
-          else { 
-            selection1.gameObject.SetActive(true);
-            selection1.localPosition = map.gridDrawer.HexToPixel(selection);
-          }
+        if (left) {
+          MoveCursor(newPos);
         }
-        if (Input.GetMouseButtonUp(1) && selection1.gameObject.activeSelf) {
-          bool active = selection2.gameObject.activeSelf;
-          Vector2 newpos = map.gridDrawer.HexToPixel(selection);
-          if ((active && newPos == (Vector2) selection2.localPosition) ||
-              (newpos == (Vector2) selection1.localPosition)) {
-            selection2.gameObject.SetActive(false);
-          }
-          else {
-            selection2.gameObject.SetActive(true);
-            selection2.localPosition = newpos;
+        if (right && selection1.gameObject.activeSelf) {
+          if (selection1.gameObject.activeSelf && newPos != (Vector2) selection1.localPosition) {
+            MapEntity m1 = map.EntityAt(selection1.gameObject.transform.localPosition);
+            MapEntity m2 = map.EntityAt(newPos);
+
+            if (m1 != null && m2 == null) {
+              HexCoord h = map.gridDrawer.PixelToHex(newPos);
+              int[] output = new int[3];
+              output[0] = m1.idx;
+              output[1] = h.i;
+              output[2] = h.j;
+              MoveCursor(newPos);
+              return output;
+            }
           }
         }
       }
     }
     else {
-      cursor.SetActive(false);
+      cursor.gameObject.SetActive(false);
     }
+    return null;
   }
 }

@@ -38,7 +38,8 @@ public static class MapLoader {
       string[] pos = Regex.Split(e.SelectSingleNode("position").InnerText, subdelimiters);
       string[] stats = Regex.Split(e.SelectSingleNode("stats").InnerText, subdelimiters);
       string unitpath = e.SelectSingleNode("sprite").InnerText;
-      m.SpawnMapEntity(new HexCoord(pos), new Unit(unitpath, new Stats(stats)));
+      bool friendly = Boolean.Parse(e.SelectSingleNode("friendly").InnerText);
+      m.SpawnMapEntity(new HexCoord(pos), new Unit(unitpath, new Stats(stats)), friendly);
     }
   }
 }

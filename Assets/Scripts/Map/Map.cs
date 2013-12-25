@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class Map : MonoBehaviour {
 #region Public Variables
-  
+
 #endregion 
 #region PrivateVariables
 
@@ -45,6 +45,14 @@ public class Map : MonoBehaviour {
     gridDrawer.DrawGrid();
   }
 
+  public void MoveEntity(int idx, HexCoord h) {
+    mapEntities[idx].MoveTo(h);
+  }
+
+  public MapEntity EntityWithIdx(int idx) {
+    return mapEntities[idx];
+  }
+
   public MapEntity EntityAt(HexCoord h) {
     foreach (MapEntity me in _mapEntities) {
       if (me.pos == h) {
@@ -80,9 +88,9 @@ public class Map : MonoBehaviour {
     }
     return false;
   }
-
-  public void SpawnMapEntity(HexCoord h, Entity e) {
-    MapEntity me = e.CreateMapEntity(h, this);
+  
+  public void SpawnMapEntity(HexCoord h, Entity e, bool friendly) {
+    MapEntity me = e.CreateMapEntity(h, this, friendly);
     _mapEntities.Add(me);
   }
 

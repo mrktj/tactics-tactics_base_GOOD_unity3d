@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 61780e29b1fcc5045af87e728201153f
+guid: d1e8cf840bb18d8409550a673609b890
 TextureImporter:
   serializedVersion: 2
   mipmaps:
@@ -16,14 +16,14 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: .25
     normalMapFilter: 0
-  isReadable: 1
+  isReadable: 0
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
-  textureFormat: 4
+  textureFormat: -3
   maxTextureSize: 1024
   textureSettings:
-    filterMode: 0
+    filterMode: -1
     aniso: 1
     mipBias: -1
     wrapMode: 1
@@ -37,15 +37,15 @@ TextureImporter:
   spritePivot: {x: .5, y: .5}
   spritePixelsToUnits: 100
   alphaIsTransparency: 1
-  textureType: 5
+  textureType: 8
   buildTargetSettings:
   - buildTarget: iPhone
     maxTextureSize: 1024
-    textureFormat: 13
+    textureFormat: -2
     compressionQuality: 50
   spriteSheet:
     sprites:
-    - name: Default
+    - name: Friendly
       rect:
         serializedVersion: 2
         x: 0
@@ -54,28 +54,10 @@ TextureImporter:
         height: 64
       alignment: 0
       pivot: {x: .5, y: .5}
-    - name: Grass
+    - name: Enemy
       rect:
         serializedVersion: 2
         x: 64
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: .5, y: .5}
-    - name: Water
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: .5, y: .5}
-    - name: Lava
-      rect:
-        serializedVersion: 2
-        x: 192
         y: 0
         width: 64
         height: 64
